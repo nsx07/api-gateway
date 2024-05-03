@@ -4,14 +4,17 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
+const { services, origins } = {
+  origins: process.env.ORIGINS ? JSON.parse(process.env.ORIGINS) : [],
+  services: process.env.SERVICES ? JSON.parse(process.env.SERVICES) : [],
+};
+
 const app = express();
 
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: origins, credentials: true }));
 app.use(helmet());
 app.use(morgan("combined"));
 app.disable("x-powered-by");
-
-const services = process.env.SERVICES ? JSON.parse(process.env.SERVICES) : [];
 
 console.log("Services configured:", services);
 
@@ -27,10 +30,10 @@ setInterval(() => {
 }, interval);
 
 function bypass(req, res, next) {
-  req.header(`Access-Control-Allow-Origin`, "*");
+  // req.header(`Access-Control-Allow-Origin`, "*");
   req.header(`Access-Control-Allow-Methods`, "*");
   req.header(`Access-Control-Allow-Headers`, "*");
-  res.header(`Access-Control-Allow-Origin`, "*");
+  // res.header(`Access-Control-Allow-Origin`, "*");
   res.header(`Access-Control-Allow-Methods`, "*");
   res.header(`Access-Control-Allow-Headers`, "*");
   next();
