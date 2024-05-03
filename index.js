@@ -11,10 +11,7 @@ app.use(helmet());
 app.use(morgan("combined"));
 app.disable("x-powered-by");
 
-const services = [
-  { route: "/storage", target: "https://storage.agendahub.app/api/" },
-];
-//process.env.SERVICES ? JSON.parse(process.env.SERVICES) : [];
+const services = process.env.SERVICES ? JSON.parse(process.env.SERVICES) : [];
 
 console.log("Services configured:", services);
 
