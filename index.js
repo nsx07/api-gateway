@@ -30,10 +30,10 @@ setInterval(() => {
 }, interval);
 
 function bypass(req, res, next) {
-  // req.header(`Access-Control-Allow-Origin`, "*");
+  req.header(`Access-Control-Allow-Origin`, "*");
   req.header(`Access-Control-Allow-Methods`, "*");
   req.header(`Access-Control-Allow-Headers`, "*");
-  // res.header(`Access-Control-Allow-Origin`, "*");
+  res.header(`Access-Control-Allow-Origin`, "*");
   res.header(`Access-Control-Allow-Methods`, "*");
   res.header(`Access-Control-Allow-Headers`, "*");
   next();
