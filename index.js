@@ -6,12 +6,15 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(helmet());
 app.use(morgan("combined"));
 app.disable("x-powered-by");
 
-const services = process.env.SERVICES ? JSON.parse(process.env.SERVICES) : [];
+const services = [
+  { route: "/storage", target: "https://storage.agendahub.app/api/" },
+];
+//process.env.SERVICES ? JSON.parse(process.env.SERVICES) : [];
 
 console.log("Services configured:", services);
 
@@ -25,6 +28,16 @@ setInterval(() => {
     requestCounts[ip] = 0;
   });
 }, interval);
+
+function bypass(req, res, next) {
+  req.header(`Access-Control-Allow-Origin`, "*");
+  req.header(`Access-Control-Allow-Methods`, "*");
+  req.header(`Access-Control-Allow-Headers`, "*");
+  res.header(`Access-Control-Allow-Origin`, "*");
+  res.header(`Access-Control-Allow-Methods`, "*");
+  res.header(`Access-Control-Allow-Headers`, "*");
+  next();
+}
 
 function rateLimitAndTimeout(req, res, next) {
   const ip = req.ip;
@@ -64,7 +77,12 @@ services.forEach(({ route, target }) => {
     },
   };
 
-  app.use(route, rateLimitAndTimeout, createProxyMiddleware(proxyOptions));
+  app.use(
+    route,
+    bypass,
+    rateLimitAndTimeout,
+    createProxyMiddleware(proxyOptions)
+  );
 });
 
 app.use((_req, res) => {
@@ -76,7 +94,7 @@ app.use((_req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5050;
 
 app.listen(PORT, () => {
   console.log(`Gateway is running on port ${PORT}`);
