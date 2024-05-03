@@ -17,6 +17,7 @@ app.use(morgan("combined"));
 app.disable("x-powered-by");
 
 console.log("Services configured:", services);
+console.log("Origins configured:", origins);
 
 const rateLimit = 20;
 const interval = 60 * 1000;
