@@ -42,6 +42,14 @@ function bypass(req, res, next) {
   next();
 }
 
+function logger(req, res, next) {
+  console.log(`${req.method} ${req.originalUrl}`);
+  console.log(`Request IP: ${req.ip}`);
+  console.log(`Request headers: ${JSON.stringify(req.headers)}`);
+  console.log(`Request body: ${JSON.stringify(req.body)}`);
+  next();
+}
+
 function rateLimitAndTimeout(req, res, next) {
   const ip = req.ip;
 
@@ -83,6 +91,7 @@ services.forEach(({ route, target }) => {
   app.use(
     route,
     bypass,
+    logger,
     rateLimitAndTimeout,
     createProxyMiddleware(proxyOptions)
   );
